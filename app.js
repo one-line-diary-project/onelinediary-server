@@ -37,7 +37,7 @@ app.get("/diary", async (req, res) => {
     },
   };
   if (startDate && endDate) {
-    diary = await DiaryModel.find(query);
+    diary = await DiaryModel.find(query).sort({ createdAt: -1 });
   } else {
     diary = await DiaryModel.findOne(query);
   }

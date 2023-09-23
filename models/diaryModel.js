@@ -10,8 +10,16 @@ const diarySchema = new schema(
       },
     ],
     author: String,
-  },
-  { timestamps: true }
+    createdAt: {
+      type: String,
+      default: Date.now,
+    },
+    updateAt: {
+      type: String,
+      default: Date.now,
+    },
+  }
+  //{ timestamps: true }
 );
 
 module.exports = mongoose.model("diarySchema", diarySchema); // 모델 생성 및 export

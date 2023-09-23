@@ -21,7 +21,7 @@ app.use(
 if (config.debug) app.use(morgan("tiny"));
 
 app.get("/diary", async (req, res) => {
-  const { startDate, endDate } = req.query;
+  const { startDate, endDate, s, l } = req.query;
 
   let diary = [];
 
@@ -32,12 +32,16 @@ app.get("/diary", async (req, res) => {
   const query = {
     // author: sessionValue,
     createdAt: {
-      $gte: fromDate.toISOString().slice(0, -1),
-      $lt: toDate.toISOString().slice(0, -1),
+      $gte: fromDate.toISOString().slice(0, -14),
+      $lt: toDate.toISOString().slice(0, -14),
     },
   };
+
   if (startDate && endDate) {
-    diary = await DiaryModel.find(query).sort({ createdAt: -1 });
+    diary = await DiaryModel.find(query)
+      .skip(s)
+      .limit(l)
+      .sort({ createdAt: 1 });
   } else {
     diary = await DiaryModel.findOne(query);
   }

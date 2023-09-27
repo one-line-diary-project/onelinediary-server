@@ -22,14 +22,9 @@ app.use(
 if (config.debug) app.use(morgan("tiny"));
 
 app.get("/diary", async (req, res) => {
-  const { startDate, endDate, currentPage } = req.query;
-
-  const perPage = 4;
+  const { startDate, endDate, currentPage, perPage } = req.query;
 
   let diary = [];
-
-  console.log(startDate);
-  console.log(endDate);
 
   const toDate = endDate
     ? new Date(endDate)

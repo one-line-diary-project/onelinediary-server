@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const moment = require("moment");
+const helmet = require("helmet");
 
 const config = require("./config");
 const connectDB = require("./db/database");
@@ -11,6 +12,7 @@ const DiaryModel = require("./models/diaryModel");
 const app = express();
 
 app.use(express.json());
+app.use(helmet());
 
 app.use(
   cors({

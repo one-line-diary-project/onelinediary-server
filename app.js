@@ -4,27 +4,56 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const moment = require("moment");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 
 const config = require("./config");
 const connectDB = require("./db/database");
 const DiaryModel = require("./models/diaryModel");
-
+const AppError = require("./utils/appError");
+const { getGoogleUserInfo, getGoogleToken } = require("./service/authService");
 const app = express();
 
 app.use(express.json());
 app.use(helmet());
+app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "*", // 이후 수정
+    origin: "http://localhost:3000", // 클라이언트의 도메인으로 변경
     credentials: true,
   })
 );
 
 if (config.debug) app.use(morgan("tiny"));
 
+app.get("/auth/google/callback", async (req, res) => {
+  const { code } = req.query;
+  if (!code) {
+    return next(new AppError("Authorization code not provided!", 401));
+  }
+  const {
+    id_token: idToken,
+    access_token: accessToken,
+    expires_in: expiresIn,
+  } = await getGoogleToken({ code });
+
+  res.cookie("idToken", idToken, { httpOnly: true });
+  res.cookie("accessToken", accessToken, { httpOnly: true });
+  return res.redirect(config.defaultAfterUrl);
+});
+
+app.post("/logout", (req, res) => {
+  res.cookie("idToken", "");
+  res.cookie("accessToken", "");
+
+  res.status(200).json({ result: "success" });
+});
 app.get("/diary", async (req, res) => {
   const { startDate, endDate, currentPage, perPage } = req.query;
+  const { idToken, accessToken } = req.cookies;
+
+  // 오류 처리 필요
+  //  const { id } = await getGoogleUserInfo(idToken, accessToken);
 
   let diary = [];
 
@@ -34,7 +63,7 @@ app.get("/diary", async (req, res) => {
   toDate.setDate(toDate.getDate() + 1);
 
   const query = {
-    // author: sessionValue,
+    // author: id,
     createdAt: {
       $gte: moment(startDate).format("YYYY-MM-DD"),
       $lt: moment(toDate).format("YYYY-MM-DD"),
@@ -54,12 +83,16 @@ app.get("/diary", async (req, res) => {
 
 app.put("/diary", async (req, res) => {
   const { _id, contents } = req.body;
+  const { idToken, accessToken } = req.cookies;
+
+  // 오류 처리 필요
+  // const { id } = await getGoogleUserInfo(idToken, accessToken);
 
   let newDiary;
 
   if (_id === 1) {
     newDiary = new DiaryModel();
-    newDiary.author = "38749fufaaTester";
+    newDiary.author = id;
     newDiary.createdAt = moment().format("YYYY-MM-DD HH:mm:ss");
     newDiary.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
     newDiary.contents = contents.map((it) => ({
@@ -86,6 +119,7 @@ app.put("/diary", async (req, res) => {
     }
   }
 
+  console.log(newDiary);
   res.status(201).json(newDiary);
 });
 

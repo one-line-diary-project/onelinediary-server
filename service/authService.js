@@ -20,8 +20,6 @@ module.exports.getGoogleToken = async ({ code }) => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-    console.log(data);
-
     return data;
   } catch (error) {
     throw new AppError(error);

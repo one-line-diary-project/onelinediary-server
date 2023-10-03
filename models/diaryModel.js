@@ -22,4 +22,4 @@ const diarySchema = new schema(
   //{ timestamps: true }
 );
 
-module.exports = mongoose.model("diarySchema", diarySchema); // 모델 생성 및 export
+module.exports = mongoose.model("diarySchema", diarySchema);

@@ -25,6 +25,7 @@ const config = {
   clientSecret: process.env.GOOGLE_SECRET,
   redirectUri: process.env.GOOGLE_REDIRECT,
   loginAfterUrl: process.env.LOGIN_AFTER_URL,
+  defaultUrl: process.env.DEFAULT_URL,
 };
 
 module.exports = config;

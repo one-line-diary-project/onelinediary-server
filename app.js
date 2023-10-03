@@ -37,23 +37,34 @@ app.get("/auth/google/callback", async (req, res) => {
     expires_in: expiresIn,
   } = await getGoogleToken({ code });
 
-  res.cookie("idToken", idToken, { httpOnly: true });
-  res.cookie("accessToken", accessToken, { httpOnly: true });
-  return res.redirect(config.defaultAfterUrl);
+  const cookieOption = {
+    expires: new Date(Date.now() + expiresIn),
+    httpOnly: true,
+  };
+
+  res.cookie("idToken", idToken, cookieOption);
+  res.cookie("accessToken", accessToken, cookieOption);
+  return res.redirect(config.loginAfterUrl);
 });
 
 app.post("/logout", (req, res) => {
-  res.cookie("idToken", "");
-  res.cookie("accessToken", "");
+  res.clearCookie("idToken");
+  res.clearCookie("accessToken");
   res.status(200).json({ result: "success" });
 });
+
 app.get("/diary", async (req, res) => {
   const { startDate, endDate, currentPage, perPage } = req.query;
   const { idToken, accessToken } = req.cookies;
 
+  console.log(accessToken);
   // 오류 처리 필요 (로그인 안한 경우..)
-  const { id } = await getGoogleUserInfo(idToken, accessToken);
-
+  let id;
+  try {
+    id = await getGoogleUserInfo(idToken, accessToken);
+  } catch (error) {
+    id = "";
+  }
   let diary;
 
   const toDate = endDate

@@ -24,7 +24,7 @@ const config = {
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_SECRET,
   redirectUri: process.env.GOOGLE_REDIRECT,
-  defaultAfterUrl: process.env.DEFAULT_AFTER_URL,
+  loginAfterUrl: process.env.LOGIN_AFTER_URL,
 };
 
 module.exports = config;

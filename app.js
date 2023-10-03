@@ -45,17 +45,16 @@ app.get("/auth/google/callback", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.cookie("idToken", "");
   res.cookie("accessToken", "");
-
   res.status(200).json({ result: "success" });
 });
 app.get("/diary", async (req, res) => {
   const { startDate, endDate, currentPage, perPage } = req.query;
   const { idToken, accessToken } = req.cookies;
 
-  // 오류 처리 필요
-  //  const { id } = await getGoogleUserInfo(idToken, accessToken);
+  // 오류 처리 필요 (로그인 안한 경우..)
+  const { id } = await getGoogleUserInfo(idToken, accessToken);
 
-  let diary = [];
+  let diary;
 
   const toDate = endDate
     ? new Date(endDate)
@@ -77,7 +76,12 @@ app.get("/diary", async (req, res) => {
       .sort({ createdAt: 1 });
   } else {
     diary = await DiaryModel.findOne(query);
+    if (diary === null) {
+      diary = {};
+    }
+    diary.loginId = id;
   }
+
   res.status(201).json(diary);
 });
 

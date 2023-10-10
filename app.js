@@ -30,7 +30,7 @@ app.use("/", tRoute);
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = "오류가 발생했습니다. ";
-  res.status(statusCode).json("error", { err });
+  res.status(statusCode).json({ error: err.message });
 });
 
 app.listen(config.port, () => {

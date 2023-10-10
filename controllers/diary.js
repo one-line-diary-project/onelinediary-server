@@ -9,14 +9,25 @@ module.exports.showDiary = async (req, res) => {
   const { idToken, accessToken } = req.cookies;
 
   let id = "";
-  if (idToken && accessToken) {
+
+  try {
     const userInfo = await getGoogleUserInfo(idToken, accessToken);
     id = userInfo.id;
-  }
-
-  if (!id) {
+  } catch (err) {
+    if (idToken && accessToken) {
+      return res.status(err.status).json({ err: err.message });
+    }
     return res.status(201).json({});
   }
+  // if (idToken && accessToken) {
+  //   const userInfo = await getGoogleUserInfo(idToken, accessToken);
+  //   console.log(userInfo);
+  //   id = userInfo.id;
+  // }
+
+  // if (!id) {
+  //   return res.status(201).json({});
+  // }
 
   let diary;
 
@@ -26,7 +37,7 @@ module.exports.showDiary = async (req, res) => {
   toDate.setDate(toDate.getDate() + 1);
 
   const query = {
-    //author: id,
+    author: id,
     createdAt: {
       $gte: moment(startDate).format("YYYY-MM-DD"),
       $lt: moment(toDate).format("YYYY-MM-DD"),

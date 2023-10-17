@@ -14,10 +14,11 @@ module.exports.googleLoginCallback = async (req, res) => {
   } = await getGoogleToken({ code });
 
   const cookie = {
-    httpOnly: true,
+    ...config.session.cookie,
     expires: Date.now() + expiresIn * 1000,
     maxAge: expiresIn * 1000,
   };
+
   res.cookie("idToken", idToken, cookie); // config.cookie
   res.cookie("accessToken", accessToken, cookie); // config.cookie
   return res.redirect(config.loginAfterUrl);

@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // 클라이언트의 도메인으로 변경
+    origin: config.defaultUrl,
     credentials: true,
   })
 );

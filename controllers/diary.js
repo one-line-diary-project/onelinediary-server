@@ -3,6 +3,8 @@ const moment = require("moment-timezone");
 const DiaryModel = require("../models/diaryModel");
 const { getGoogleUserInfo } = require("../service/authService");
 
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 module.exports.showDiary = async (req, res) => {
   const { startDate, endDate, currentPage, perPage } = req.query;
   const { idToken, accessToken } = req.cookies;
@@ -30,7 +32,7 @@ module.exports.showDiary = async (req, res) => {
 
   let diary;
 
-  const now = moment().tz("Asia/Seoul");
+  const now = moment().tz(timeZone);
 
   console.log(now);
   const toDate = endDate
@@ -63,7 +65,7 @@ module.exports.creatDiary = async (req, res) => {
   const { idToken, accessToken } = req.cookies;
 
   const { id } = await getGoogleUserInfo(idToken, accessToken);
-  const now = moment().tz("Asia/Seoul");
+  const now = moment().tz(timeZone);
 
   let newDiary;
 

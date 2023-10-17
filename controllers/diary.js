@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const DiaryModel = require("../models/diaryModel");
-
 const { getGoogleUserInfo } = require("../service/authService");
 
 module.exports.showDiary = async (req, res) => {
@@ -31,9 +30,12 @@ module.exports.showDiary = async (req, res) => {
 
   let diary;
 
+  const now = moment().tz("Asia/Seoul");
+
+  console.log(now);
   const toDate = endDate
     ? new Date(endDate)
-    : new Date(moment().format("YYYY-MM-DD"));
+    : new Date(now.format("YYYY-MM-DD"));
   toDate.setDate(toDate.getDate() + 1);
 
   const query = {
@@ -61,14 +63,15 @@ module.exports.creatDiary = async (req, res) => {
   const { idToken, accessToken } = req.cookies;
 
   const { id } = await getGoogleUserInfo(idToken, accessToken);
+  const now = moment().tz("Asia/Seoul");
 
   let newDiary;
 
   if (_id === 1) {
     newDiary = new DiaryModel();
     newDiary.author = id;
-    newDiary.createdAt = moment().format("YYYY-MM-DD HH:mm:ss");
-    newDiary.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
+    newDiary.createdAt = now.format("YYYY-MM-DD HH:mm:ss");
+    newDiary.updatedAt = now.format("YYYY-MM-DD HH:mm:ss");
     newDiary.contents = contents.map((it) => ({
       content: it.content,
       postTime: it.postTime,

@@ -17,4 +17,6 @@ router
   .get(catchAsync(diary.showDiary))
   .put(isLoggedIn, catchAsync(diary.creatDiary));
 
+router.route("/diaryList").get(catchAsync(diary.showDiaryList));
+
 module.exports = router;

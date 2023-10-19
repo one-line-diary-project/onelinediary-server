@@ -32,14 +32,17 @@ module.exports.showDiary = async (req, res) => {
 
   console.log(startDate);
   console.log(endDate);
-  const getBeginningOfDay = (date) => {
-    const newDate = new Date(date);
-    newDate.setHours(0, 0, 0, 0);
-    return newDate;
-  };
+  // const getBeginningOfDay = (date) => {
+  //   const newDate = new Date(date);
+  //   newDate.setHours(0, 0, 0, 0);
+  //   return newDate;
+  // };
 
   const toDate = endDate ? new Date(endDate) : new Date();
   toDate.setDate(toDate.getDate() + 1);
+
+  console.log(moment(new Date().setHours(0, 0, 0, 0)).utc());
+  console.log(moment(toDate.setHours(0, 0, 0, 0)).utc());
 
   const query = {
     author: id,

@@ -10,16 +10,16 @@ const diarySchema = new schema(
       },
     ],
     author: String,
-    createdAt: {
-      type: String,
-      default: Date.now,
-    },
-    updateAt: {
-      type: Date,
-      default: Date.now,
-    },
-  }
-  //{ timestamps: true }
+    // createdAt: {
+    //   type: Date,
+    //   default: Date.now,
+    // },
+    // updateAt: {
+    //   type: Date,
+    //   default: Date.now,
+    // },
+  },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("diarySchema", diarySchema);

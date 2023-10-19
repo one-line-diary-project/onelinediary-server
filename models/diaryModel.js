@@ -11,7 +11,7 @@ const diarySchema = new schema(
     ],
     author: String,
     createdAt: {
-      type: Date,
+      type: String,
       default: Date.now,
     },
     updateAt: {

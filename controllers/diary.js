@@ -41,16 +41,11 @@ module.exports.showDiary = async (req, res) => {
   const toDate = endDate ? new Date(endDate) : new Date();
   toDate.setDate(toDate.getDate() + 1);
 
-  console.log(moment(new Date().setHours(0, 0, 0, 0)).utc());
-  console.log(moment(toDate.setHours(0, 0, 0, 0)).utc());
-
   const query = {
     author: id,
     createdAt: {
-      $gte: startDate
-        ? getBeginningOfDay(startDate)
-        : getBeginningOfDay(new Date()),
-      $lt: getBeginningOfDay(toDate),
+      $gte: moment(startDate).format("YYYY-MM-DD"),
+      $lt: moment(toDate).format("YYYY-MM-DD"),
     },
   };
 
@@ -78,6 +73,9 @@ module.exports.creatDiary = async (req, res) => {
   if (_id === 1) {
     newDiary = new DiaryModel();
     newDiary.author = id;
+    newDiary.createdAt = moment()
+      .tz("Asia/Seoul")
+      .format("YYYY-MM-DD HH:mm:ss");
     newDiary.contents = contents.map((it) => ({
       content: it.content,
       postTime: it.postTime,

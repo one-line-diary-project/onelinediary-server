@@ -19,14 +19,20 @@ module.exports.googleLoginCallback = async (req, res) => {
     maxAge: expiresIn * 1000,
   };
 
-  res.cookie("idToken", idToken, cookie); // config.cookie
-  res.cookie("accessToken", accessToken, cookie); // config.cookie
+  res.cookie("idToken", idToken, cookie);
+  res.cookie("accessToken", accessToken, cookie);
   return res.redirect(config.loginAfterUrl);
 };
 
 module.exports.logout = (req, res) => {
-  res.clearCookie("idToken");
-  res.clearCookie("accessToken");
+  const logoutCookie = {
+    maxAge: 1,
+    httpOnly: true,
+    sameSite: "none",
+  };
+
+  res.cookie("refreshToken", "", logoutCookie);
+  res.cookie("accessToken", "", logoutCookie);
   res.status(200).json({ result: "success" });
 };
 

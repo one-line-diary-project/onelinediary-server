@@ -3,8 +3,6 @@ const moment = require("moment-timezone");
 const DiaryModel = require("../models/diaryModel");
 const { getGoogleUserInfo } = require("../service/authService");
 
-const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
 module.exports.showDiary = async (req, res) => {
   const { startDate, endDate, currentPage, perPage } = req.query;
   const { idToken, accessToken } = req.cookies;
@@ -32,22 +30,18 @@ module.exports.showDiary = async (req, res) => {
 
   let diary;
 
-  const now = moment().tz(timeZone);
-
-  console.log(now);
-  const toDate = endDate
-    ? new Date(endDate)
-    : new Date(now.format("YYYY-MM-DD"));
+  const toDate = endDate ? new Date(endDate) : new Date(startDate);
   toDate.setDate(toDate.getDate() + 1);
 
   const query = {
     author: id,
     createdAt: {
-      $gte: moment(startDate).format("YYYY-MM-DD"),
+      $gte: startDate,
       $lt: moment(toDate).format("YYYY-MM-DD"),
     },
   };
 
+  console.log(query);
   if (startDate && endDate) {
     diary = await DiaryModel.find(query)
       .skip((currentPage - 1) * perPage)
@@ -61,19 +55,18 @@ module.exports.showDiary = async (req, res) => {
 };
 
 module.exports.creatDiary = async (req, res) => {
-  const { _id, contents } = req.body;
+  const { _id, contents, creatAt } = req.body;
   const { idToken, accessToken } = req.cookies;
 
   const { id } = await getGoogleUserInfo(idToken, accessToken);
-  const now = moment().tz(timeZone);
 
   let newDiary;
 
   if (_id === 1) {
     newDiary = new DiaryModel();
     newDiary.author = id;
-    newDiary.createdAt = now.format("YYYY-MM-DD HH:mm:ss");
-    newDiary.updatedAt = now.format("YYYY-MM-DD HH:mm:ss");
+    newDiary.createdAt = moment(creatAt).format("YYYY-MM-DD HH:mm:ss");
+    newDiary.updatedAt = moment(creatAt).format("YYYY-MM-DD HH:mm:ss");
     newDiary.contents = contents.map((it) => ({
       content: it.content,
       postTime: it.postTime,

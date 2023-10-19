@@ -31,7 +31,7 @@ module.exports.logout = (req, res) => {
     sameSite: "none",
   };
 
-  res.cookie("refreshToken", "", logoutCookie);
+  res.cookie("idToken", "", logoutCookie);
   res.cookie("accessToken", "", logoutCookie);
   res.status(200).json({ result: "success" });
 };

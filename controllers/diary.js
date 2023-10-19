@@ -6,6 +6,7 @@ const { getGoogleUserInfo } = require("../service/authService");
 module.exports.showDiary = async (req, res) => {
   const { startDate, endDate, currentPage, perPage } = req.query;
   const { idToken, accessToken } = req.cookies;
+  console.log(moment(startDate));
 
   let id = "";
 
@@ -30,13 +31,13 @@ module.exports.showDiary = async (req, res) => {
 
   let diary;
 
-  const toDate = endDate ? new Date(endDate) : new Date(startDate);
+  const toDate = endDate ? new Date(endDate) : new Date();
   toDate.setDate(toDate.getDate() + 1);
 
   const query = {
     author: id,
     createdAt: {
-      $gte: startDate,
+      $gte: moment(startDate).format("YYYY-MM-DD"),
       $lt: moment(toDate).format("YYYY-MM-DD"),
     },
   };
@@ -55,7 +56,7 @@ module.exports.showDiary = async (req, res) => {
 };
 
 module.exports.creatDiary = async (req, res) => {
-  const { _id, contents, creatAt } = req.body;
+  const { _id, contents } = req.body;
   const { idToken, accessToken } = req.cookies;
 
   const { id } = await getGoogleUserInfo(idToken, accessToken);
@@ -65,8 +66,7 @@ module.exports.creatDiary = async (req, res) => {
   if (_id === 1) {
     newDiary = new DiaryModel();
     newDiary.author = id;
-    newDiary.createdAt = moment(creatAt).format("YYYY-MM-DD HH:mm:ss");
-    newDiary.updatedAt = moment(creatAt).format("YYYY-MM-DD HH:mm:ss");
+    newDiary.offset = new Date().getTimezoneOffset();
     newDiary.contents = contents.map((it) => ({
       content: it.content,
       postTime: it.postTime,

@@ -29,9 +29,10 @@ module.exports.logout = (req, res) => {
     maxAge: 1,
     httpOnly: true,
     sameSite: "none",
+    secure: true,
   };
 
-  res.cookie("refreshToken", "", logoutCookie);
+  res.cookie("idToken", "", logoutCookie);
   res.cookie("accessToken", "", logoutCookie);
   res.status(200).json({ result: "success" });
 };
